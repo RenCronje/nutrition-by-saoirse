@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nutrition by Saoirse | Elite Wellness Coaching</title>
+    <!-- Tailwind & Fonts Loading -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #fcfbf9;
+            --text-main: #2C2C2C;
+            --accent: #B09B87;
+        }
+
+        /* --- ELEMENTOR & THEME POLLUTION RESETS --- */
+        .elementor-section-wrap, .elementor-element, .elementor-widget-container {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #saoirse-app-wrapper {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        #saoirse-app-wrapper *:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        #saoirse-app-wrapper * {
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        #saoirse-app-wrapper h1, 
+        #saoirse-app-wrapper h2, 
+        #saoirse-app-wrapper h3, 
+        #saoirse-app-wrapper h4, 
+        #saoirse-app-wrapper h5, 
+        #saoirse-app-wrapper .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* --- NATIVE SCROLL SNAP MECHANICS --- */
+        #scroll-container {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            height: 100dvh;
+            width: 100vw;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #scroll-container::-webkit-scrollbar, .slide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100dvh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            overflow-y: auto; 
+            overflow-x: hidden !important; 
+            scroll-behavior: smooth;
+            background-color: var(--bg-color);
+            overscroll-behavior-x: none; 
+            overscroll-behavior-y: contain; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* --- STANDARDIZED ARROWS --- */
+        .scroll-down-btn {
+            position: absolute;
+            bottom: 4.5rem; 
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #6b7280;
+            transition: color 0.3s ease;
+            pointer-events: auto;
+            z-index: 50;
+            text-align: center;
+            white-space: nowrap;
+        }
+        @media (min-width: 768px) {
+            .scroll-down-btn { bottom: 3rem; }
+        }
+        .scroll-down-btn:hover {
+            color: var(--accent);
+        }
+        .scroll-down-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: bounce 2s infinite;
+            margin-top: 0.75rem;
+        }
+
+        .scroll-up-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            transition: color 0.3s ease;
+            pointer-events: auto;
+            margin: 4rem auto;
+            z-index: 50;
+        }
+        .scroll-up-btn:hover {
+            color: var(--accent);
+        }
+        .scroll-up-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* --- RESPONSIVE TESTIMONIAL SLIDER --- */
+        .testimonial-window {
+            height: 250px; 
+            position: relative;
+            overflow: hidden;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+        @media (min-width: 768px) {
+            .testimonial-window { height: 400px; } 
+        }
+        
+        .testimonial-track {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .testimonial-card {
+            height: 250px;
+            display: flex; flex-direction: column; justify-content: center;
+            opacity: 0.3; transform: scale(0.9);
+            transition: opacity 1.2s ease, transform 1.2s ease;
+        }
+        @media (min-width: 768px) {
+            .testimonial-card { height: 400px; }
+        }
+        .testimonial-card.active {
+            opacity: 1; transform: scale(1);
+        }
+
+        .img-overlay {
+            background: linear-gradient(to right, rgba(252,251,249,1) 0%, rgba(252,251,249,0.3) 50%, rgba(252,251,249,0) 100%);
+        }
+
+        /* --- TRUE ACCORDIONS --- */
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-in-out;
+        }
+        .accordion-content > div { overflow: hidden; }
+
+        .carousel-container {
+            position: relative; width: 100%; overflow: hidden; border-radius: 0.25rem; cursor: pointer;
+        }
+        .carousel-inner {
+            display: flex; height: 100%; transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide { min-width: 100%; height: 100%; }
+
+        /* --- THE ULTIMATE NAKED BTN --- */
+        #saoirse-app-wrapper .naked-btn {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        #saoirse-app-wrapper .naked-btn:hover,
+        #saoirse-app-wrapper .naked-btn:focus,
+        #saoirse-app-wrapper .naked-btn:active {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* --- MINIMAL TILE BUTTON CLASSES --- */
+        .minimal-tile-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            border: 1px solid rgba(44, 44, 44, 0.2); 
+            background-color: transparent; 
+            color: #2C2C2C;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.75rem; 
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 0px; 
+            cursor: pointer;
+        }
+        .minimal-tile-btn:hover {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            color: #ffffff;
+        }
+        .minimal-tile-btn-dark {
+            border: 1px solid rgba(252, 251, 249, 0.3);
+            color: #fcfbf9;
+            background: transparent;
+        }
+        .minimal-tile-btn-dark:hover {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="saoirse-app-wrapper">
+
+    <!-- GLOBAL LOCKED CTA BUTTON -->
+    <button onclick="scrollToSlide(7); switchLeadForm('apply');" class="fixed top-4 right-4 md:top-8 md:right-12 z-[100] inline-flex items-center justify-center px-4 py-2.5 md:px-8 md:py-4 bg-[#2C2C2C] text-[#fcfbf9] uppercase tracking-widest text-[10px] md:text-xs font-semibold hover:bg-[#B09B87] border border-[#2C2C2C] transition-all pointer-events-auto shadow-md rounded">Start Journey</button>
+
+    <!-- SIDE NAVIGATION ARROWS -->
+    <button id="nav-arrow-left" onclick="scrollHorizontal(-1)" class="naked-btn fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-[100] p-3 md:p-4 text-[#B09B87] hover:text-[#2C2C2C] bg-white/70 hover:bg-white backdrop-blur-md rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 opacity-0 pointer-events-none cursor-pointer">
+        <svg class="w-6 h-6 md:w-8 md:h-8 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+    </button>
+    <button id="nav-arrow-right" onclick="scrollHorizontal(1)" class="naked-btn fixed right-2 md:right-6 top-1/2 -translate-y-1/2 z-[100] p-3 md:p-4 text-[#B09B87] hover:text-[#2C2C2C] bg-white/70 hover:bg-white backdrop-blur-md rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 cursor-pointer">
+        <svg class="w-6 h-6 md:w-8 md:h-8 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+    </button>
+
+    <!-- MAIN HORIZONTAL TRACK -->
+    <div id="scroll-container">
+
+        <!-- SLIDE 1: HOME -->
+        <section class="slide bg-[#fcfbf9]" id="slide-home">
+            <div class="relative w-full h-[100dvh] flex flex-col md:flex-row z-10">
+                <div class="hidden md:block absolute inset-0 w-1/2 right-0 left-auto z-0">
+                    <div class="absolute inset-0 img-overlay z-10"></div>
+                    <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-41-7-scaled.png" class="object-cover w-full h-full object-center grayscale-[20%]">
+                </div>
+                
+                <div class="md:hidden absolute top-0 left-0 w-full h-[60vh] z-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#fcfbf9] via-[#fcfbf9]/60 to-transparent z-10 h-full w-full pointer-events-none"></div>
+                    <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-41-7-scaled.png" class="object-cover w-full h-full object-center grayscale-[20%]">
+                </div>
+
+                <div class="w-full md:w-1/2 h-full flex flex-col justify-end md:justify-center items-center md:items-start text-center md:text-left px-6 md:px-24 pb-40 md:pb-0 relative z-10 bg-transparent">
+                    <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-600 md:text-gray-500 mb-2 md:mb-6 font-semibold md:font-normal">Nutrition & Wellness Coach</p>
+                    <h1 class="serif text-5xl md:text-8xl leading-none mb-3 md:mb-6">Nutrition<br><span class="italic text-[#B09B87]">by</span> Saoirse</h1>
+                    <p class="text-sm md:text-xl font-medium md:font-light max-w-md leading-relaxed text-gray-800 md:text-gray-600 drop-shadow-sm md:drop-shadow-none">
+                        Stop fighting your body. Learn to fuel your life, master your macros, and build the healthiest, happiest version of you.
+                    </p>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-6 mt-8 w-full md:w-auto">
+                        <a href="https://calendly.com/nutritionbysaoirse/30min" target="_blank" class="minimal-tile-btn w-full md:w-auto">Book a Free Call</a>
+                    </div>
+
+                    <div class="flex flex-col items-center md:items-start mt-8 md:mt-10 gap-3 w-full">
+                        <button onclick="scrollHorizontal(1)" class="naked-btn flex items-center justify-center md:justify-start gap-3 text-gray-500 hover:text-[#B09B87] text-[10px] uppercase tracking-widest pointer-events-auto transition-colors cursor-pointer w-full md:w-auto">
+                            <span class="hidden md:inline">Swipe to Explore Pages</span>
+                            <span class="md:hidden">Swipe to Explore Pages</span>
+                            <svg class="w-4 h-4 transition-transform duration-300 transform hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="scrollVertical('slide-home', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>SCROLL DOWN FOR MENU</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <!-- BOTTOM DIRECTORY MENU -->
+            <div class="min-h-[100dvh] w-full flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-16 relative z-20 py-16 bg-[#fcfbf9]">
+                <div class="flex flex-col md:flex-row items-center w-full gap-12 md:gap-0">
+                    <div class="w-full md:w-5/12 mb-8 md:mb-0 text-center md:text-left">
+                        <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Site Directory</p>
+                        <h2 class="serif text-5xl md:text-7xl mb-4 md:mb-6">Explore<br>The Journey.</h2>
+                        <p class="text-gray-600 font-light max-w-sm mx-auto md:mx-0 text-sm md:text-base">Navigate your path to true health. Select a destination below to seamlessly explore my coaching resources and disciplines.</p>
+                    </div>
+                    
+                    <div class="w-full md:w-7/12 pl-0 md:pl-12 flex flex-col gap-6 text-center md:text-left">
+                        <button onclick="scrollToSlide(2)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">Real Results</button>
+                        <button onclick="scrollToSlide(3)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">Meet Saoirse</button>
+                        <button onclick="scrollToSlide(4)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">Core Disciplines</button>
+                        <button onclick="scrollToSlide(5)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">My Method</button>
+                        <button onclick="scrollToSlide(6)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">Coaching Plans</button>
+                        <button onclick="scrollToSlide(7)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left border-b border-gray-200 pb-4 pointer-events-auto w-full cursor-pointer">Start Journey / Apply</button>
+                        <button onclick="scrollToSlide(8)" class="naked-btn text-2xl md:text-4xl serif italic text-gray-800 hover:text-[#B09B87] transition-colors text-center md:text-left pb-4 pointer-events-auto w-full cursor-pointer">Contact & Socials</button>
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-between items-end gap-10 md:gap-16 mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-home', 0)" class="naked-btn scroll-up-btn cursor-pointer w-1/3 text-center !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: TESTIMONIALS -->
+        <section class="slide" id="slide-testimonials">
+            <div class="h-[100dvh] w-full flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-16 relative">
+                <div class="flex flex-col md:flex-row items-center w-full">
+                    <div class="w-full md:w-5/12 mb-8 md:mb-0 text-center md:text-left">
+                        <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Testimonials</p>
+                        <h2 class="serif text-5xl md:text-7xl mb-4 md:mb-6">Real Results.<br>Real Lives.</h2>
+                        <p class="text-gray-600 font-light max-w-sm mx-auto md:mx-0 text-sm md:text-base">Hear from clients who completely transformed their relationship with food, hit their goals without restriction, and stepped into their power.</p>
+                    </div>
+                    
+                    <div class="w-full md:w-7/12 pl-0 md:pl-12">
+                        <div class="testimonial-window pointer-events-none text-center md:text-left">
+                            <div class="testimonial-track" id="testimonial-track">
+                                <div class="testimonial-card active">
+                                    <p class="serif text-[13px] md:text-3xl italic mb-3 md:mb-6 leading-relaxed px-4 md:px-0 line-clamp-5 md:line-clamp-none">"I was so sick of putting on clothes that I moved over to Australia with and not feeling comfortable in them anymore. Everything was feeling tight and I wasn’t happy in my body anymore. Seeing the transition pictures of other clients you posted gave me the kick up the butt that I needed."</p>
+                                    <p class="uppercase tracking-widest text-[9px] md:text-xs font-semibold">— Rebecca</p>
+                                </div>
+                                <div class="testimonial-card">
+                                    <p class="serif text-[13px] md:text-3xl italic mb-3 md:mb-6 leading-relaxed px-4 md:px-0 line-clamp-5 md:line-clamp-none">"I felt like I was stuck in constant ruts, both mentally and physically. I needed structure and a routine around exercise and food, and that’s exactly what I got. It gave me the push and consistency I was missing."</p>
+                                    <p class="uppercase tracking-widest text-[9px] md:text-xs font-semibold">— Roisin</p>
+                                </div>
+                                <div class="testimonial-card">
+                                    <p class="serif text-[13px] md:text-3xl italic mb-3 md:mb-6 leading-relaxed px-4 md:px-0 line-clamp-5 md:line-clamp-none">"After being with you for just 8 weeks I’ve noticed such a difference in my life, I’m much happier and comfortable in myself, I have a much better relationship with food."</p>
+                                    <p class="uppercase tracking-widest text-[9px] md:text-xs font-semibold">— Aoife</p>
+                                </div>
+                                <div class="testimonial-card">
+                                    <p class="serif text-[13px] md:text-3xl italic mb-3 md:mb-6 leading-relaxed px-4 md:px-0 line-clamp-5 md:line-clamp-none">"I was eating all the wrong foods, lacking sleep, feeling constantly tired and drained in mining... joining Saoirse was the best decision I ever made."</p>
+                                    <p class="uppercase tracking-widest text-[9px] md:text-xs font-semibold">— Sinead</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="scrollVertical('slide-testimonials', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>EXPLORE TRANSFORMATIONS</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <div class="min-h-screen w-full overflow-hidden bg-[#F8F5F2] py-16 md:py-24 px-4 md:px-24 flex flex-col items-center relative">
+                <div class="max-w-4xl mx-auto w-full">
+                    
+                    <h3 class="serif text-4xl md:text-5xl mb-4 text-[#2C2C2C] text-center md:text-left">Transformations</h3>
+                    <p class="font-light text-gray-600 mb-10 text-sm max-w-xl text-center md:text-left">See how personalised strategies can help you break the 'start fresh on Monday' cycles, restrictive dieting, and finally feel comfortable in your own skin. Stop yo-yo dieting.</p>
+
+                    <div class="border-t border-black w-full">
+                        
+                        <!-- SARAH 🇮🇪 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Sarah, 32 🇮🇪</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Sarah-2.jpeg" alt="Sarah Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Sarah-1-1.jpeg" alt="Sarah Side" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Sarah-3.jpeg" alt="Sarah Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Sarah found herself trapped in an exhausting cycle of eating perfectly clean all day, only to end up aggressively binge-eating in the evenings when her willpower ran out.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"I felt completely out of control around food. I would starve myself during my workday to try and 'be good,' and by the time I got home, I was eating everything in the pantry and feeling immense guilt afterward."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Saoirse completely shifted my mindset. She had me actually eating more food during the day to properly fuel my body, breaking the restrict-and-binge cycle entirely."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"I have finally achieved steady, sustainable weight loss without feeling like I'm on a diet. More importantly, my evening cravings have completely vanished and I have my energy back."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- REBECCA 🇦🇺 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Rebecca, 27 🇦🇺</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Rebecca-3-e1785054657511.jpeg" alt="Rebecca Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Rebecca-4-e1785054621184.jpeg" alt="Rebecca Side" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Rebecca-1-1.jpg" alt="Rebecca Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Rebecca is a shift worker living in Australia who was feeling completely uncomfortable in her own skin, struggling with her eating habits, and feeling frustrated that she couldn't fit back into the clothes she once wore.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Well I was so sick of putting on clothes that I moved over to Australia with and not feeling comfortable in them anymore. Everything was feeling tight and I wasn’t happy in my body anymore."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Seeing the transition pictures of other clients gave me the kick up the butt that I needed. Honestly I’m making far better choices when it comes to eating out. I’m choosing high protein meals and focusing on healthier options and the right amount of carbs."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"I’m back gymming and getting over 10,000 steps a day! I look forward to being active again in the evenings after work! Even if I have a bad day or bad week I still see improvements in my check-ins. I’m 5 weeks into this plan and people are already commenting on my progress."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SINEAD 🇦🇺 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Sinead, 36 🇦🇺</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Sinead.jpeg" alt="Sinead Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Sinead-2.jpeg" alt="Sinead Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Sinead is a FIFO worker in a demanding role, navigating early rises, long shifts, and a heavy culture of unwinding at the bar. She was exhausted, seeing no gym results, and feeling depleted as her clothes got tighter each time she came home from a swing.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"A day in mining for me was an early rise, off to work, straight to the bar after work then bed. Eating all the wrong foods, lack of sleep... It was physically and mentally draining me without even realizing, and coming home each break and my clothes getting tighter left me feeling depleted."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"At the start I was like uuugggghh having to do food prep sticking to restricted plans, but Saoirse works around you for the foods you like. Once you have all the food prepped it’s so much easier to stay on track while on site."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"I have way more energy at work, I'm in a way better mood... getting the right amount of sleep has been a big thing for me going from 5 hours to 7/8 hours. I enjoy going to the bar and still socializing without drinking alcohol, but I still enjoy the odd few drinks without undoing all my hard work!"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ROISIN 🇮🇪 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Roisin, 27 🇮🇪</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Roisin.jpeg" alt="Roisin Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Roisin-2.jpeg" alt="Roisin Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Roisin came to coaching seeking a way out. She felt completely and utterly stuck in constant mental and physical slumps, struggling to find any consistency in her day-to-day life.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"I felt like I was stuck in constant ruts, both mentally and physically. I was lacking the consistency needed to see real changes or achieve any of my weight loss goals."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"I needed structure built firmly around my food and exercise to finally break those cycles, and that’s exactly what I got. It gave me the push I was missing."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"The structured routine changed everything. Breaking those constant ruts has led to a much more energized, focused lifestyle, and I successfully achieved my weight loss goal!"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEAN 🇮🇩 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Sean, 35 🇮🇩</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Jarred-1.webp" alt="Sean Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Jarred-2.webp" alt="Sean Side" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Jarred.webp" alt="Sean Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Sean was working in the intense FIFO industry while living in Bali on his RnR (rest and recovery). Because of his remote setup and constant travel, standard tracking tools were completely unavailable to him.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Living in Bali on my RnR meant I didn’t have access to weigh out my food or accurately track my calories. I felt like I was flying blind with my nutrition despite putting in the work."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Saoirse taught me how to succeed without relying on a scale. Everything we achieved was through learning how to accurately eyeball my food, giving me total freedom while still staying aligned with my goals."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"The structure she gave me for both my food and gym routine changed the game. I got leaner, stronger, and built a physique I'm proud of—all without ever needing to meticulously track a single calorie."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AOIFE 🇮🇪 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Aoife, 27 🇮🇪</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Aoife-3.jpeg" alt="Aoife Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Aoife-4.jpeg" alt="Aoife Side" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Aoife-2-1.jpeg" alt="Aoife Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Aoife is a dedicated client who came to Nutrition by Saoirse feeling stuck in a cycle of restarting her diet every week. Despite her best efforts, she felt like she was going around in circles and never making lasting progress toward her health goals.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"I signed up because I was tired of restarting every week going around in circles and never making any progress. I needed something that actually fit my lifestyle."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Having someone guide you and set you on the right path as well as being accountable to someone is a huge help. Your content really stood out to me, especially the meals you posted looked delicious and achievable!"</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"After being with you for just 8 weeks I’ve noticed such a difference in my life. I’m much happier and comfortable in myself, I have a much better relationship with food as well as not feeling guilty about going out for a meal and that ruining any progress I have made."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GLENN 🇦🇺 -->
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Glenn, 38 🇦🇺</span>
+                                <span class="accordion-icon text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                                        <div class="h-max order-1">
+                                            <div class="carousel-container aspect-square md:aspect-[19/18] bg-neutral-200 shadow-sm rounded-lg overflow-hidden relative">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/eric.webp" alt="Glenn Front" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <div class="carousel-slide relative">
+                                                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/eric.webp" alt="Glenn Back" class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-2">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm mb-6">Glenn is a business owner who runs his own mechanical shop. Juggling the demands of a growing business meant working crazy long shifts and never fully switching off, which took a massive toll on his personal health and fitness goals.</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Struggle</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Between running the shop and working non-stop, my fitness completely flatlined. I was stressed out, lacking any routine, and struggling to figure out how to balance my health with my business."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Process</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-5 border-l-2 border-[#B09B87]">"Saoirse gave me realistic strategies that actually worked around my shop hours. Instead of feeling restricted, I learned how to properly fuel my body for those long shifts without adding more stress to my day."</p>
+                                            
+                                            <h5 class="text-[10px] md:text-sm uppercase tracking-widest font-semibold mb-2">The Result</h5>
+                                            <p class="serif italic text-gray-700 leading-relaxed text-sm md:text-base pl-3 mb-4 border-l-2 border-[#B09B87]">"I'm finally hitting my fitness goals while managing the business. My energy levels are incredible, and I've actually learned how to switch off and prioritize my own well-being."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-center items-end gap-10 md:gap-16 mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer pb-0.5">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-testimonials', 0)" class="naked-btn scroll-up-btn cursor-pointer !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer pb-0.5">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: ABOUT -->
+        <section class="slide" id="slide-about">
+            <div class="h-[100dvh] w-full flex flex-col justify-center items-center text-center px-6 md:px-24 relative bg-[#F0EBE6]">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#B09B87] mb-4">Meet Saoirse</p>
+                <h2 class="serif text-5xl md:text-7xl mb-4 md:mb-6">Your Nutritionist<br>Your Teammate</h2>
+                <p class="max-w-md mx-auto font-light text-gray-600 mb-10 text-sm md:text-base">Hi, I am Saoirse, a registered nutritionist but more importantly your partner in building a healthier happier life.</p>
+                
+                <button onclick="scrollVertical('slide-about', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>READ MY STORY</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <div class="min-h-screen w-full overflow-hidden bg-[#fcfbf9] py-16 md:py-24 px-6 md:px-24 flex flex-col justify-center relative">
+                <div class="grid md:grid-cols-12 gap-8 md:gap-16 max-w-7xl mx-auto items-start w-full">
+                    
+                    <div class="md:col-span-5 sticky top-24 w-full rounded-xl overflow-hidden shadow-lg hidden md:block border border-gray-200 bg-gray-100 aspect-[17/19]">
+                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Saoirse-Landing-Page-Image-1-1.png" alt="Saoirse Fanning Profile" class="w-full h-full object-cover object-center grayscale-[10%]">
+                    </div>
+
+                    <div class="md:col-span-7">
+                        
+                        <div class="md:hidden w-full mx-auto rounded-xl overflow-hidden mb-8 mt-2 shadow-md aspect-[17/19]">
+                            <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Saoirse-Landing-Page-Image-1-1.png" alt="Saoirse Fanning Profile" class="w-full h-full object-cover object-top grayscale-[10%]">
+                        </div>
+
+                        <h3 class="serif text-4xl mb-6 text-center md:text-left">My Journey</h3>
+                        <div class="space-y-6 font-light text-gray-600 leading-relaxed text-sm mb-12 md:mb-16">
+                            <p>My journey started in Cork, Ireland, where I earned my bachelor's degree in nutrition & health science and qualified as a Registered Nutritionist in 2022. But I realized quickly that true health isn't just about what you learn in a classroom; it's about life experience.</p>
+                            <p>That realization took me to Thailand, where I worked in a detox resort helping people from all over the world transform their health and mindset. It was there I learned that nutrition isn't just fuel, it's a relationship. After a year abroad, I settled in Australia and founded <span class="italic">Nutrition by Saoirse</span>, turning a passion project into a global platform.</p>
+                            <p>Today, I support clients worldwide - from FIFO and shift workers to busy parents - who are all striving to create sustainable lifestyles in a busy world.</p>
+                            <p>I don't believe in handing you a cookie-cutter meal plan and walking away. My approach is realistic and education-based. I want to teach you how to understand your body so that nutrition fits into <span class="italic">your</span> life, not the other way around. I am here to coach you, support you, and share the knowledge I've gained to help you become the best version of yourself.</p>
+                        </div>
+
+                        <h3 class="serif text-4xl mb-6 text-center md:text-left">Core Pillars</h3>
+                        <div class="border-t border-black">
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-4 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto cursor-pointer">
+                                    <span class="text-base md:text-lg serif tracking-wide">Registered Profession</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-6">
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed pr-4 pl-2">I hold a bachelors degree in nutrition & health science. My coaching is built on clinical evidence and scientific understanding, not temporary social media trends.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-4 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto cursor-pointer">
+                                    <span class="text-base md:text-lg serif tracking-wide">Education First</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-6">
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed pr-4 pl-2">I don't just tell you <span class="italic">what</span> to eat; I teach you <span class="italic">how</span> to fuel your body. My goal is to give you the knowledge—from understanding macros to gut health—so you can maintain your results for life without needing me forever.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-4 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto cursor-pointer">
+                                    <span class="text-base md:text-lg serif tracking-wide">Habits Before Deficits</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-6">
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed pr-4 pl-2">We spend the first month nailing your sleep, meal prep, and protein intake before we ever look at cutting calories. A resilient metabolism is built on consistency and strong habits, not crash diets.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-4 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto cursor-pointer">
+                                    <span class="text-base md:text-lg serif tracking-wide">Real Life Strategies</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-6">
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed pr-4 pl-2">From my time in clinical detox centers to coaching FIFO workers, I know a "perfect plate" isn't always possible. I build flexible strategies that fit into busy schedules, shift work, and family chaos, ensuring the plan fits your life, not the other way around.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-4 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto cursor-pointer">
+                                    <span class="text-base md:text-lg serif tracking-wide">Tailored Support</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-6">
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed pr-4 pl-2">Whether you need a deep-dive weekly Zoom call or efficient voice-note feedback on the go, I offer tiered support structures designed to match your specific lifestyle and budget.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VIDEO SECTION -->
+                        <div id="videoWrapper" class="w-full mt-12 md:mt-16 relative aspect-video bg-neutral-200 rounded-xl overflow-hidden shadow-lg pointer-events-auto">
+                            <video id="aboutVideo" class="w-full h-full object-cover" loop muted playsinline>
+                                <source src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Anahata_Wellness_Retreat_1080P.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            
+                            <div id="videoControls" class="absolute bottom-0 left-0 right-0 p-4 md:p-6 flex justify-between items-center bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-500 opacity-0">
+                                <button id="playPauseBtn" class="naked-btn text-white hover:text-[#B09B87] transition-colors focus:outline-none cursor-pointer">
+                                    <svg id="pauseIcon" class="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                    <svg id="playIcon" class="w-8 h-8 md:w-10 md:h-10 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <button id="muteBtn" class="naked-btn text-white hover:text-[#B09B87] transition-colors focus:outline-none cursor-pointer">
+                                    <svg id="mutedIcon" class="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                                    <svg id="unmutedIcon" class="w-8 h-8 md:w-10 md:h-10 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-between items-center mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-about', 0)" class="naked-btn scroll-up-btn cursor-pointer w-1/3 text-center !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: DISCIPLINES -->
+        <section class="slide" id="slide-disciplines">
+            <div class="h-[100dvh] w-full flex flex-col justify-center items-center text-center px-6 relative bg-[#E8E1DA]">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#B09B87] mb-4">A 360° Approach</p>
+                <h2 class="serif text-6xl md:text-8xl mb-4 md:mb-6">Core Disciplines</h2>
+                <p class="max-w-xl mx-auto font-light text-gray-700 mb-10 text-sm md:text-base">True health isn't just about what's on your plate. It's about how you move, how you feel, and how you live. Explore the five disciplines that shape my coaching.</p>
+                
+                <button onclick="scrollVertical('slide-disciplines', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>EXPLORE DISCIPLINES</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <div class="min-h-screen w-full overflow-hidden bg-[#fcfbf9] py-16 md:py-24 px-6 md:px-24 flex flex-col justify-center relative">
+                <div class="grid md:grid-cols-12 gap-8 md:gap-16 max-w-7xl mx-auto items-start w-full">
+                    
+                    <div class="md:col-span-5 sticky top-24 w-full rounded-xl overflow-hidden shadow-lg hidden md:block border border-gray-200 bg-gray-100 aspect-[17/19]">
+                        <img id="discipline-img-desktop" loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/WhatsApp-Image-2025-11-17-at-fff.jpeg" class="w-full h-full object-cover object-center grayscale-[20%] transition-opacity duration-300">
+                    </div>
+
+                    <div class="md:col-span-7 flex flex-col">
+                        
+                        <div class="md:hidden w-full rounded-xl overflow-hidden mb-8 shadow-inner border border-gray-200 bg-gray-100 aspect-[17/19]">
+                            <img id="discipline-img-mobile" loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/WhatsApp-Image-2025-11-17-at-fff.jpeg" class="w-full h-full object-cover object-center grayscale-[20%] transition-opacity duration-300">
+                        </div>
+
+                        <div class="border-t border-black w-full">
+                            
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleDisciplineAccordion(this, 1)" class="naked-btn discipline-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">From my journey to yours</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm md:text-base">I don't teach anything I haven't lived. Having navigated my own health challenges and global transformations, my coaching is rooted in deep empathy. We build your path based on realistic, lived experience—creating a plan that fits into your actual life, not an idealized version of it.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleDisciplineAccordion(this, 2)" class="naked-btn discipline-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Beyond the Scale</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <h4 class="uppercase tracking-widest text-[10px] md:text-xs text-[#B09B87] mb-4">— Sustainable Weight Loss</h4>
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm md:text-base">We are dismantling the obsession with the scale. True progress is measured by how your clothes fit, your energy levels, and your confidence. We focus on sustainable body recomposition—losing fat while building metabolic resilience—so you never have to 'diet' again.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleDisciplineAccordion(this, 3)" class="naked-btn discipline-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Fueling Your Body Right</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <h4 class="uppercase tracking-widest text-[10px] md:text-xs text-[#B09B87] mb-4">— Strength & Vitality</h4>
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm md:text-base">Food is not the enemy; it is your ultimate tool. Whether you are training for a specific event or just want to keep up with your kids, we optimize your macros to ensure you are eating enough to build lean muscle, recover faster, and tackle each day with boundless energy.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleDisciplineAccordion(this, 4)" class="naked-btn discipline-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Feel Your Best Everyday</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <h4 class="uppercase tracking-widest text-[10px] md:text-xs text-[#B09B87] mb-4">— Health & Lifestyle Guide</h4>
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm md:text-base">Your nutrition plan should enhance your lifestyle, not restrict it. We look at the bigger picture: sleep hygiene, stress management, and daily habits. By synchronizing your nutrition with your lifestyle, we create a vibrant, energetic daily reality where you genuinely feel your best.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleDisciplineAccordion(this, 5)" class="naked-btn discipline-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Eat with Confidence</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <h4 class="uppercase tracking-widest text-[10px] md:text-xs text-[#B09B87] mb-4">— Ease Allergies & Intolerances</h4>
+                                            <p class="font-light text-gray-600 leading-relaxed text-sm md:text-base">Digestive discomfort and food anxiety shouldn't dictate your social life. If you struggle with bloating, allergies, or intolerances, we meticulously identify triggers and rebuild your gut health. My goal is to empower you to navigate restaurant menus and social events with complete confidence and zero stress.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-center items-end gap-10 md:gap-16 mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-disciplines', 0)" class="naked-btn scroll-up-btn cursor-pointer !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: METHOD -->
+        <section class="slide" id="slide-method">
+            <div class="h-[100dvh] w-full flex flex-col justify-center items-center text-center px-6 relative bg-[#F8F5F2]">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-600 mb-4">90 Day Foundation</p>
+                <h2 class="serif text-6xl md:text-8xl mb-4 md:mb-6">My Method</h2>
+                <p class="max-w-xl mx-auto font-light text-gray-700 mb-2 text-sm md:text-base">From my journey to yours - The heart behind Nutrition by Saoirse.</p>
+                <p class="max-w-xl mx-auto font-light text-gray-700 mb-10 text-sm md:text-base">You will learn how to fuel your body, boost your energy and live a healthier, happier life.</p>
+                
+                <button onclick="scrollVertical('slide-method', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>VIEW THE 4 PHASES</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <div class="min-h-screen w-full overflow-hidden bg-[#fcfbf9] py-16 md:py-24 px-6 md:px-24 flex flex-col justify-center relative">
+                <div class="grid md:grid-cols-12 gap-8 md:gap-16 max-w-7xl mx-auto items-start w-full">
+                    
+                    <div class="md:col-span-5 sticky top-24 w-full rounded-xl overflow-hidden shadow-lg hidden md:block border border-gray-200 bg-gray-100 aspect-[17/19]">
+                        <img id="method-phase-img-desktop" loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_1_28_23f.jpeg" alt="My Method" class="w-full h-full object-cover object-center grayscale-[10%] transition-opacity duration-300">
+                    </div>
+
+                    <div class="md:col-span-7 flex flex-col">
+                        
+                        <div class="md:hidden w-full rounded-xl overflow-hidden mb-8 shadow-inner border border-gray-200 bg-gray-100 aspect-[17/19]">
+                            <img id="method-phase-img-mobile" loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_1_28_23f.jpeg" class="w-full h-full object-cover object-center grayscale-[10%] transition-opacity duration-300">
+                        </div>
+
+                        <div class="border-t border-black w-full">
+                            
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleMethodAccordion(this, 1)" class="naked-btn method-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Phase 1: The Foundation</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 mb-6 text-sm leading-relaxed">"Nailing the Basics" We start by hitting the reset button on your approach. For the first two weeks, I want you to forget about calorie deficits.<br>We can’t build a house without the foundations, your health is much the same, so we focus entirely on your habits first.</p>
+                                            <p class="font-medium text-gray-800 text-sm mb-2">Weeks 1-2</p>
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed mb-6">We focus on sleep hygiene, consistent meal prep, and creating high-protein meals that actually satisfy you. We prioritize fiber and improving upon what you are currently eating, rather than restricting it.</p>
+                                            <p class="font-medium text-gray-800 text-sm mb-2">Weeks 3-4</p>
+                                            <p class="font-light text-gray-600 text-sm leading-relaxed mb-6">Once your habits are solid, we introduce the deficit. Because you are fueled and rested, this transition feels sustainable, not starving.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleMethodAccordion(this, 2)" class="naked-btn method-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Phase 2: The Rhythm</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 mb-6 text-sm leading-relaxed">"Finding Your Flow" This is where the magic happens. In Month 2, we are nailing everything. The initial shock of change is gone, and you are now operating with a new level of consistency.</p>
+                                            <p class="font-medium text-gray-800 text-sm mb-2">Month 2</p>
+                                            <ul class="space-y-4 font-light text-gray-600 text-sm leading-relaxed list-disc ml-5">
+                                                <li>Solidifying Meals: You've spent weeks learning what high-protein and high-fiber meals look like. You aren't guessing anymore. You know what fuels you and what that should look like.</li>
+                                                <li>Controlled Progress: We continue the deficit established in Week 3, but now it fits seamlessly into your life. This isn't about white-knuckling it; it's about proving to yourself that you can show up every single day.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleMethodAccordion(this, 3)" class="naked-btn method-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Phase 3: The Deep Dive</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 mb-6 text-sm leading-relaxed">"Mastering Your Body" Now that the weight is moving and the habits are set, we go deeper. This is what separates Nutrition by Saoirse from generic plans. We look at the internal health markers that keep you vibrant long-term.</p>
+                                            <p class="font-medium text-gray-800 text-sm mb-2">Month 3</p>
+                                            <ul class="space-y-4 font-light text-gray-600 text-sm leading-relaxed list-disc ml-5">
+                                                <li>Gut Health & Diversity: We focus on your gut microbiome and increasing your "plant points" for immunity and digestion.</li>
+                                                <li>Intuitive Eating: We move away from strict tracking and start learning the "Hunger Scale". I teach you mindful eating practices so you can trust your body's signals again.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleMethodAccordion(this, 4)" class="naked-btn method-accordion-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Goal: The Education</span>
+                                    <span class="accordion-icon text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 mb-6 text-sm leading-relaxed">"Moving Your Plate from level 3 to level 10" I don't just tell you what to eat; I teach you why. My goal is to empower you so you never need a nutrition coach again.<br>Most plans hand you a rulebook; I teach you the game. Throughout our journey, we focus on specific educational pillars to ensure you are fueling effectively, not just cutting calories.</p>
+                                            <ul class="space-y-4 font-light text-gray-600 text-sm leading-relaxed list-disc ml-5">
+                                                <li>Mastering Macros: We move beyond "good vs. bad" food. You will learn how to balance protein, carbs, and fats to fuel your specific lifestyle and energy needs.</li>
+                                                <li>The Power of Micros: True health lives in the details. We focus on fiber, vitamins, and "eating the rainbow" to ensure you aren't just losing weight, but gaining vitality.</li>
+                                                <li>Mindset & Hunger Cues: Diet culture teaches you to ignore your body; I teach you to listen to it. We practice intuitive eating and using the hunger scale to build trust with your body again.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-center items-end gap-10 md:gap-16 mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-method', 0)" class="naked-btn scroll-up-btn cursor-pointer !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: PRODUCTS -->
+        <section class="slide" id="slide-products">
+            <div class="h-[100dvh] w-full flex flex-col justify-center items-center text-center px-6 relative bg-[#fcfbf9]">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#B09B87] mb-4">Pricing & Packages</p>
+                <h2 class="serif text-6xl md:text-8xl mb-4 md:mb-6 text-[#2C2C2C]">Start your Journey</h2>
+                <p class="max-w-xl mx-auto font-light text-gray-600 mb-10 text-sm md:text-base">Ready to take the next step in your personal journey? Explore resources, scheduling, and guidance to support your lifestyle and wellness goals.</p>
+                
+                <button onclick="scrollVertical('slide-products', window.innerHeight)" class="naked-btn scroll-down-btn absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer">
+                    <span>VIEW PACKAGES</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                </button>
+            </div>
+
+            <div class="min-h-screen w-full bg-[#2C2C2C] py-16 md:py-24 px-6 md:px-24 flex flex-col justify-center relative border-t border-gray-800">
+                <div class="grid md:grid-cols-12 gap-8 md:gap-16 max-w-7xl mx-auto items-center w-full">
+                    
+                    <div class="md:col-span-5 w-full rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-800 aspect-[17/19]">
+                        <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-29.jpg" alt="The Body Confidence Programme" class="w-full h-full object-cover object-center grayscale-[10%]">
+                    </div>
+                    
+                    <div class="md:col-span-7 flex flex-col">
+                        <h4 class="text-[#B09B87] text-[10px] md:text-xs uppercase tracking-[0.3em] mb-4">Flagship Programme</h4>
+                        <h3 class="serif text-4xl md:text-6xl mb-4 md:mb-6 leading-tight text-[#fcfbf9]">The Body Confidence Programme</h3>
+                        <p class="text-base md:text-xl font-light mb-6 md:mb-8 text-gray-300">A 12-Week Journey to Rebuild Your Relationship with Food & Yourself.</p>
+                        <p class="font-medium mb-10 md:mb-12 text-sm leading-relaxed text-gray-200">
+                            <strong class="text-white block mb-2">This isn't another weight loss programme.</strong>
+                            It's a programme designed to help you finally break free from the exhausting cycle you've been stuck in for years. This isn't about another meal plan or another diet. It's about finally building a healthy relationship with food, improving your body image and creating confidence that isn't dependent on your weight.
+                        </p>
+
+                        <div class="grid md:grid-cols-2 gap-8 md:gap-12 mb-10 border-t border-gray-700 pt-8 md:pt-10">
+                            <div>
+                                <h5 class="serif text-2xl md:text-3xl mb-4 md:mb-6 text-[#B09B87]">If you're tired of...</h5>
+                                <ul class="space-y-2 md:space-y-3 font-light text-sm text-gray-300 list-disc ml-5">
+                                    <li>Starting again every Monday...</li>
+                                    <li>Promising yourself "this time will be different"...</li>
+                                    <li>Bingeing after a week of being "good"...</li>
+                                    <li>Feeling guilty every time you eat something you enjoy...</li>
+                                    <li>Constantly thinking about food...</li>
+                                    <li>Hating photos of yourself...</li>
+                                    <li>Avoiding mirrors...</li>
+                                    <li>Pulling at your clothes wishing your body looked different...</li>
+                                    <li>Letting the scales determine your mood...</li>
+                                    <li>Feeling like you're never good enough...</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="serif text-2xl md:text-3xl mb-4 md:mb-6 text-[#B09B87]">Who It's For</h5>
+                                <ul class="space-y-2 md:space-y-3 font-light text-sm text-gray-300 list-disc ml-5 mb-8 md:mb-10">
+                                    <li>Binge-restrict cycles & Yo-yo dieting</li>
+                                    <li>Poor body image & Low self-esteem</li>
+                                    <li>Food guilt & Emotional eating</li>
+                                    <li>Negative self-talk & Constantly starting over</li>
+                                </ul>
+
+                                <h5 class="serif text-2xl md:text-3xl mb-4 md:mb-6 text-[#B09B87]">What's Included</h5>
+                                <ul class="space-y-2 md:space-y-3 font-light text-sm text-gray-300 list-disc ml-5">
+                                    <li>Weekly 60-minute live group Zoom coaching</li>
+                                    <li>Nutrition education & Body image coaching</li>
+                                    <li>Self-compassion exercises</li>
+                                    <li>Weekly worksheets and action tasks</li>
+                                    <li>Accountability throughout the programme</li>
+                                    <li>Supportive community of women on the same journey</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <button onclick="scrollToSlide(7); switchLeadForm('apply');" class="minimal-tile-btn-dark self-start w-full md:w-auto mt-2">Join The Programme</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="min-h-screen w-full overflow-hidden bg-[#F8F5F2] py-16 md:py-24 px-12 md:px-24 flex flex-col items-center shadow-[0_-15px_40px_rgba(0,0,0,0.1)] border-t border-gray-200 relative">
+                <div class="max-w-5xl mx-auto w-full">
+                    
+                    <h3 class="serif text-4xl mb-2 text-[#2C2C2C]">1:1 Coaching Plans</h3>
+                    <p class="serif text-xl md:text-2xl text-[#B09B87] mb-4">Starting from €333</p>
+                    <p class="font-light text-gray-600 mb-8 text-sm">No More Cookie-Cutter Plans. Even if you've tried coaching before, this is different.</p>
+                    
+                    <div class="bg-white border border-gray-200 p-5 md:p-6 rounded-lg mb-10 md:mb-12 shadow-sm">
+                        <p class="text-sm font-light text-gray-700 leading-relaxed mb-4">
+                            <strong class="font-semibold block mb-2 text-base text-black">All Coaching Tiers Include The Core Signature System:</strong>
+                            A comprehensive nutrition assessment, fully personalised nutrition plan, personalized feedback & progress reviews, habit coaching & goal setting, nutrition education, accountability, unlimited WhatsApp support (responses within 24 hours), and access to the private Nutrition by Saoirse WhatsApp community.
+                        </p>
+                        <p class="text-[10px] md:text-xs uppercase tracking-widest text-[#B09B87] font-semibold">Choose your tier based on your preferred communication style below:</p>
+                    </div>
+
+                    <div class="border-t border-black mb-16 md:mb-24">
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Tier One Coaching</span>
+                                <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-2 pb-8">
+                                        <h4 class="text-lg md:text-xl font-medium mb-3 md:mb-4">Premium 60-Minute Zoom Calls Weekly.</h4>
+                                        <p class="font-light text-gray-600 text-sm mb-5 md:mb-6 leading-relaxed">Our most intimate and hands-on coaching experience. You receive all the benefits of the core coaching system, elevated with deep, real-time connection and immediate personal attention over a weekly 1:1 Zoom coaching session to accelerate your growth.</p>
+                                        <button onclick="scrollToSlide(7); switchLeadForm('apply');" class="minimal-tile-btn text-[10px] md:text-xs mt-2">Apply Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Tier Two Coaching</span>
+                                <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-2 pb-8">
+                                        <h4 class="text-lg md:text-xl font-medium mb-3 md:mb-4">Video Feedback Weekly.</h4>
+                                        <p class="font-light text-gray-600 text-sm mb-5 md:mb-6 leading-relaxed">Built on our core signature system, Tier Two offers highly personalized, asynchronous video check-ins. Perfect for busy schedules, giving you detailed visual and spoken feedback to keep you progressing without needing to sync calendars.</p>
+                                        <button onclick="scrollToSlide(7); switchLeadForm('apply');" class="minimal-tile-btn text-[10px] md:text-xs mt-2">Apply Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-black py-2">
+                            <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                <span class="text-xl md:text-2xl serif tracking-wide font-medium">Tier Three Coaching</span>
+                                <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div> 
+                                    <div class="pt-2 pb-8">
+                                        <h4 class="text-lg md:text-xl font-medium mb-3 md:mb-4">Voicenote Feedback Weekly.</h4>
+                                        <p class="font-light text-gray-600 text-sm mb-5 md:mb-6 leading-relaxed">Efficient and highly effective. You receive the complete coaching system, utilizing a weekly voicenote check-in where we review, discuss, and progress your coaching on the go.</p>
+                                        <button onclick="scrollToSlide(7); switchLeadForm('apply');" class="minimal-tile-btn text-[10px] md:text-xs mt-2">Apply Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="serif text-4xl mb-4 text-[#2C2C2C]">Digital Guides</h3>
+                    <p class="font-light text-gray-600 mb-8 text-sm">Actionable resources and recipes to support your daily routines.</p>
+                    
+                    <div class="grid md:grid-cols-5 gap-8 md:gap-12 mb-16 md:mb-24 border-t border-black pt-8">
+                        <div class="md:col-span-2 relative w-full">
+                            <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Fifo-Fuel-Food-scaled.jpg" alt="FIFO Recipe Book" class="w-full h-auto object-contain rounded-xl shadow-md border border-gray-200">
+                        </div>
+                        <div class="md:col-span-3 flex flex-col justify-center">
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Get Your FIFO Recipe Book Now</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 leading-relaxed mb-6 text-sm">No more guessing what to eat on shift.<br>This FIFO Recipe Meal Guide includes simple, high-protein meals with calories and macros provided, helping you stay fuelled, energised and consistent with your nutrition - even with the demands of FIFO life.</p>
+                                            <a href="https://buy.stripe.com/3cI5kFgJQ7Re0Rj06U9MY0c?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGniwFvFDoQOxt0li3vk2B0JHwyZLBpmHaGcAAZhehBe2HM3PH9D3bSTfj8gdM_aem_k06Dl2ENqN-U9iU9eEaFQg" target="_blank" class="minimal-tile-btn text-[10px] md:text-xs mt-2">Get Your Recipe Book Here</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="serif text-4xl mb-4 text-[#2C2C2C]">Discovery & Consultations</h3>
+                    <p class="font-light text-gray-600 mb-8 text-sm">Go beyond the plate. Let's map out your overall wellness journey together.</p>
+
+                    <div class="grid md:grid-cols-5 gap-8 md:gap-12 mb-8 border-t border-black pt-8">
+                        <div class="md:col-span-3 flex flex-col justify-center order-2 md:order-1">
+                            <div class="border-b border-black py-2">
+                                <button onclick="toggleAccordion(this)" class="naked-btn w-full py-5 md:py-6 flex justify-between items-center text-left hover:text-[#B09B87] transition-colors pointer-events-auto group cursor-pointer">
+                                    <span class="text-xl md:text-2xl serif tracking-wide font-medium">Explore Life Coaching</span>
+                                    <span class="accordion-icon text-xl md:text-2xl font-light">+</span>
+                                </button>
+                                <div class="accordion-content">
+                                    <div> 
+                                        <div class="pt-2 pb-8">
+                                            <p class="font-light text-gray-600 leading-relaxed mb-6 text-sm">Book a free coaching consultancy to meet each other and assess the coaching needs. Go beyond the plate. True health encompasses your mind, environment, and relationships.</p>
+                                            <a href="https://calendly.com/nutritionbysaoirse/30min" target="_blank" class="minimal-tile-btn text-[10px] md:text-xs mt-2">Book a Free Call</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 relative w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 order-1 md:order-2 aspect-[17/19]">
+                            <img loading="lazy" src="https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-31.jpg" alt="Life Coaching" class="w-full h-full object-cover object-center grayscale-[20%]">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="w-full flex justify-center items-end gap-10 md:gap-16 mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-products', 0)" class="naked-btn scroll-up-btn cursor-pointer !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: DUAL APPLICATION (WAITLIST & APPLY) -->
+        <section class="slide bg-[#E8E1DA]" id="slide-waitlist">
+            <div class="w-full flex flex-col items-center relative">
+                
+                <div class="w-full min-h-[100dvh] flex flex-col justify-center items-center px-6 md:px-24 relative">
+                    <div class="max-w-4xl w-full text-center mb-10">
+                        <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#B09B87] mb-4">Take The Next Step</p>
+                        <h2 class="serif text-5xl md:text-7xl mb-4 md:mb-6">Select Your Path</h2>
+                        <p class="font-light text-gray-700 text-sm md:text-base leading-relaxed max-w-xl mx-auto mb-8 md:mb-12 px-2">
+                            Whether you're ready to dive into 1:1 coaching right now or want to secure your spot for the next enrollment, choose your journey below.
+                        </p>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center w-full max-w-lg mx-auto mb-8 pointer-events-auto">
+                            <button onclick="switchLeadForm('waitlist')" id="btn-form-waitlist" class="minimal-tile-btn flex-1 !border-[#B09B87] !bg-[#B09B87] !text-white hover:!bg-[#B09B87] outline-none cursor-pointer">Priority Waitlist</button>
+                            <button onclick="switchLeadForm('apply')" id="btn-form-apply" class="minimal-tile-btn flex-1 bg-white outline-none cursor-pointer border-gray-400">Join My Team</button>
+                        </div>
+                    </div>
+
+                    <button onclick="scrollVertical('slide-waitlist', document.getElementById('form-scroll-anchor').offsetTop - 20)" class="naked-btn scroll-down-btn absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 cursor-pointer">
+                        <span>SCROLL TO FORM</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m0 0l-5-5m5 5l5-5"></path></svg>
+                    </button>
+                </div>
+
+                <div id="form-scroll-anchor" class="w-full max-w-3xl mx-auto px-6 pb-24 md:pb-32 pt-10">
+                    
+                    <!-- 1. Waitlist Form -->
+                    <div id="container-waitlist" class="w-full mx-auto transition-opacity duration-500 opacity-100">
+                        <div id="waitlist-header" class="text-center mb-8">
+                            <h3 class="serif text-4xl mb-3 text-[#2C2C2C]">Coaching Waitlist 2026</h3>
+                            <p class="font-light text-sm text-gray-600 max-w-md mx-auto">1:1 Coaching spots are strictly limited. Join the priority waitlist to receive early access before public enrollment opens.</p>
+                        </div>
+
+                        <form onsubmit="submitLeadForm(event, this)" class="flex flex-col gap-6 pointer-events-auto bg-white p-6 md:p-12 rounded-lg shadow-sm border border-gray-100 max-w-lg mx-auto">
+                            <input type="hidden" name="_subject" value="New Waitlist Signup">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="Form_Type" value="Waitlist Signup">
+                            
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Name</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex flex-col">
+                                        <input type="text" name="First_Name" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                        <span class="text-[10px] text-gray-500 mt-1">First Name</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <input type="text" name="Last_Name" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                        <span class="text-[10px] text-gray-500 mt-1">Last Name</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Email</p>
+                                <input type="email" name="Email_Address" placeholder="example@example.com" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Whatsapp number</p>
+                                <input type="tel" name="Phone_Number" placeholder="(000) 000-0000" class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                <span class="text-[10px] text-gray-500 mt-1 block">Please enter a valid phone number.</span>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Date you would like to start</p>
+                                <input type="date" name="Start_Date" class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded text-gray-700">
+                                <span class="text-[10px] text-gray-500 mt-1 block">Date</span>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">What you struggle with most, when it comes to your nutrition?</p>
+                                <textarea name="Nutrition_Struggles" rows="3" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded resize-none"></textarea>
+                            </div>
+
+                            <div class="flex justify-center mt-4">
+                                <button type="submit" class="minimal-tile-btn w-full md:w-auto">Submit</button>
+                            </div>
+                            <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest mt-2">or WhatsApp: +61413256930</p>
+                        </form>
+                    </div>
+
+                    <!-- 2. Join Team Form -->
+                    <div id="container-apply" class="w-full transition-opacity duration-500 hidden opacity-0">
+                        <div id="apply-header" class="text-center mb-8">
+                            <h3 class="serif text-4xl mb-3 text-[#2C2C2C]">Join my team</h3>
+                            <p class="font-light text-sm text-gray-600 max-w-md mx-auto">Thank you for choosing Nutrition by Saoirse to help you achieve your goals.</p>
+                        </div>
+
+                        <form onsubmit="submitLeadForm(event, this)" class="flex flex-col gap-8 pointer-events-auto bg-white p-6 md:p-12 rounded-lg shadow-sm border border-gray-100 max-w-2xl mx-auto">
+                            <input type="hidden" name="_subject" value="New Coaching Application">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="Form_Type" value="Join My Team Application">
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-3">Which programme are you applying for?</p>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Programme_Interest" value="The Body Confidence Programme" required class="accent-[#B09B87] w-4 h-4"> The Body Confidence Programme</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Programme_Interest" value="Tier 1 Coaching" class="accent-[#B09B87] w-4 h-4"> Tier 1 Coaching</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Programme_Interest" value="Tier 2 Coaching" class="accent-[#B09B87] w-4 h-4"> Tier 2 Coaching</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Programme_Interest" value="Tier 3 Coaching" class="accent-[#B09B87] w-4 h-4"> Tier 3 Coaching</label>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-100 mt-2"></div>
+                            
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Name</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex flex-col">
+                                        <input type="text" name="First_Name" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                        <span class="text-[10px] text-gray-500 mt-1">First Name</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <input type="text" name="Last_Name" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                        <span class="text-[10px] text-gray-500 mt-1">Last Name</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Email</p>
+                                <input type="email" name="Email_Address" placeholder="example@example.com" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">WhatsApp Number</p>
+                                <input type="tel" name="Phone_Number" placeholder="(000) 000-0000" class="w-full md:w-1/2 bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                                <span class="text-[10px] text-gray-500 mt-1 block">Please enter a valid phone number.</span>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-3">Have you had nutrition coaching before?</p>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Previous_Coaching" value="Yes" required class="accent-[#B09B87] w-4 h-4"> Yes</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Previous_Coaching" value="No" class="accent-[#B09B87] w-4 h-4"> No</label>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-3">What is your main goal?</p>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Weight loss" required class="accent-[#B09B87] w-4 h-4"> Weight loss</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Muscle gain" class="accent-[#B09B87] w-4 h-4"> Muscle gain</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Maintenance" class="accent-[#B09B87] w-4 h-4"> Maintenance</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Improve relationship with food" class="accent-[#B09B87] w-4 h-4"> Improve relationship with food</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Allergies/ Intolerances" class="accent-[#B09B87] w-4 h-4"> Allergies/ Intolerances</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Eating disorders" class="accent-[#B09B87] w-4 h-4"> Eating disorders</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="malnutrition" class="accent-[#B09B87] w-4 h-4"> malnutrition</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Training (e.g fitness goals)" class="accent-[#B09B87] w-4 h-4"> Training (e.g fitness goals)</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Main_Goal" value="Other" class="accent-[#B09B87] w-4 h-4"> Other</label>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2">Specify if you selected 'other'</p>
+                                <input type="text" name="Goal_Other_Details" class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-2 leading-relaxed">On a scale of 1-10, how healthy would you rate your plate? 10 being very healthy, e.g hitting your macros along with very important micronutrient such as fibre, calcium and vitamins? Plenty of colour on your plate each meal? Portion sizes? Listening to hunger cues?</p>
+                                <input type="text" name="Plate_Health_Rating" placeholder="e.g., 2,3" required class="w-full bg-transparent border border-gray-300 px-3 py-3 text-base md:text-sm focus:outline-none focus:border-[#B09B87] transition-colors rounded">
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-3 leading-relaxed">Are you willing to invest time and gain valuable knowledge for your everyday life from my coaching?</p>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Invest_Time" value="Yes" required class="accent-[#B09B87] w-4 h-4"> Yes</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Invest_Time" value="No" class="accent-[#B09B87] w-4 h-4"> No</label>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="font-light text-sm text-[#2C2C2C] mb-3 leading-relaxed">Are you willing to invest money to achieve your goals?</p>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Invest_Money" value="Yes" required class="accent-[#B09B87] w-4 h-4"> Yes</label>
+                                    <label class="flex items-center gap-3 text-sm font-light text-gray-700"><input type="radio" name="Invest_Money" value="No" class="accent-[#B09B87] w-4 h-4"> No</label>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center mt-6">
+                                <button type="submit" class="minimal-tile-btn w-full md:w-auto">Submit Application</button>
+                            </div>
+                            <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest mt-2">or WhatsApp: +61413256930</p>
+                        </form>
+                    </div>
+
+                    <!-- SUCCESS STATE CARD -->
+                    <div id="form-success-message" class="hidden text-center bg-white p-8 md:p-12 rounded-lg shadow-sm border border-gray-100 max-w-2xl mx-auto">
+                        <div class="w-12 h-12 mx-auto rounded-full border border-[#B09B87] flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-[#B09B87]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h3 class="serif text-3xl md:text-4xl text-[#2C2C2C] mb-4">Application Received</h3>
+                        <p class="font-light text-sm md:text-base text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">Thank you for taking the first step. Saoirse will carefully review your details. You can expect to hear back within 24-48 hours with the next steps for your wellness journey.</p>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="scrollToSlide(1)" class="minimal-tile-btn text-[10px] md:text-xs">Return To Home</button>
+                            <button onclick="scrollToSlide(2)" class="minimal-tile-btn text-[10px] md:text-xs">Explore Testimonials</button>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="w-full flex justify-between items-center mt-12 mb-8 md:mt-20 md:mb-12 pt-8 border-t border-gray-200 z-50 pointer-events-auto px-6 md:px-24">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-waitlist', 0)" class="naked-btn scroll-up-btn cursor-pointer w-1/3 text-center !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: CONTACT -->
+        <section class="slide" id="slide-contact">
+            <div class="min-h-[100dvh] w-full flex flex-col items-center justify-center bg-[#2C2C2C] text-[#fcfbf9] text-center px-6 md:px-24 relative">
+                
+                <div class="flex flex-col items-center justify-center w-full pt-24 md:pt-0 mt-auto">
+                    <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#B09B87] mb-4 md:mb-6">Take The First Step</p>
+                    <h2 class="serif text-5xl md:text-8xl mb-6 md:mb-8">Let's Connect.</h2>
+                    <p class="max-w-md mx-auto font-light text-gray-300 mb-10 md:mb-12 text-sm md:text-base">Not sure which path is right for you? Book a free discovery call and let's map out your wellness journey together.</p>
+                    
+                    <a href="https://calendly.com/nutritionbysaoirse/30min" target="_blank" class="minimal-tile-btn-dark minimal-tile-btn mb-8 w-full md:w-auto">Book Free Call</a>
+                    
+                    <div class="flex gap-8 md:gap-16 pointer-events-auto pt-8 md:pt-10 mt-6 md:mt-8">
+                        <a href="https://www.instagram.com/saoirsefanning00?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="naked-btn flex flex-col items-center text-gray-400 hover:text-white transition-colors group">
+                            <svg class="w-7 h-7 md:w-8 md:h-8 mb-2 md:mb-3 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                            </svg>
+                            <span class="text-[9px] md:text-[10px] uppercase tracking-widest font-semibold">Instagram</span>
+                        </a>
+                        <a href="https://wa.me/61413256930" target="_blank" class="naked-btn flex flex-col items-center text-gray-400 hover:text-white transition-colors group">
+                            <svg class="w-7 h-7 md:w-8 md:h-8 mb-2 md:mb-3 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            <span class="text-[9px] md:text-[10px] uppercase tracking-widest font-semibold">WhatsApp</span>
+                        </a>
+                        <a href="mailto:nutritionbysaoirse@gmail.com" target="_blank" class="naked-btn flex flex-col items-center text-gray-400 hover:text-white transition-colors group">
+                            <svg class="w-7 h-7 md:w-8 md:h-8 mb-2 md:mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path>
+                            </svg>
+                            <span class="text-[9px] md:text-[10px] uppercase tracking-widest font-semibold">Email</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-between items-center mt-auto mb-16 pt-8 border-t border-gray-700 z-50 pointer-events-auto px-6 md:px-0">
+                    <button onclick="scrollToSlide(1)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-left">Home</button>
+                    
+                    <button onclick="scrollVertical('slide-contact', 0)" class="naked-btn scroll-up-btn cursor-pointer w-1/3 text-center !m-0 !mt-0 flex flex-col items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mb-1.5 md:mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87]">Back to Top</span>
+                    </button>
+                    
+                    <button onclick="scrollToSlide(8)" class="naked-btn text-[10px] md:text-xs uppercase tracking-widest text-gray-500 hover:text-[#B09B87] transition-colors cursor-pointer w-1/3 text-right">Get in Touch</button>
+                </div>
+
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full text-center">
+                    <p class="text-[9px] md:text-[10px] uppercase tracking-widest text-gray-500">© 2026 Nutrition by Saoirse</p>
+                </div>
+                
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const container = document.getElementById('scroll-container');
+            const slides = document.querySelectorAll('.slide');
+
+            // --- EDGE ARROW NAVIGATION LOGIC ---
+            const updateNavArrows = () => {
+                const slideIndex = Math.round(container.scrollLeft / window.innerWidth);
+                const leftArrow = document.getElementById('nav-arrow-left');
+                const rightArrow = document.getElementById('nav-arrow-right');
+                
+                if(slideIndex === 0) {
+                    if(leftArrow) { leftArrow.style.opacity = '0'; leftArrow.style.pointerEvents = 'none'; }
+                } else {
+                    if(leftArrow) { leftArrow.style.opacity = '1'; leftArrow.style.pointerEvents = 'auto'; }
+                }
+                
+                if(slideIndex === slides.length - 1) {
+                    if(rightArrow) { rightArrow.style.opacity = '0'; rightArrow.style.pointerEvents = 'none'; }
+                } else {
+                    if(rightArrow) { rightArrow.style.opacity = '1'; rightArrow.style.pointerEvents = 'auto'; }
+                }
+            };
+
+            updateNavArrows();
+            container.addEventListener('scroll', updateNavArrows, { passive: true });
+            
+            // --- CUSTOM 2D SCROLL LOGIC ---
+            container.addEventListener('wheel', (evt) => {
+                const currentSlideIndex = Math.round(container.scrollLeft / window.innerWidth);
+                const currentSlide = slides[currentSlideIndex];
+                
+                const isVerticalWheel = Math.abs(evt.deltaY) > Math.abs(evt.deltaX);
+                
+                if (isVerticalWheel && currentSlide.scrollTop <= 5) {
+                    evt.preventDefault(); 
+                    
+                    if (!container.isScrolling) {
+                        const direction = evt.deltaY > 0 ? 1 : -1;
+                        container.isScrolling = true;
+                        
+                        container.scrollBy({
+                            left: direction * window.innerWidth,
+                            behavior: 'smooth'
+                        });
+
+                        setTimeout(() => {
+                            container.isScrolling = false;
+                        }, 500); 
+                    }
+                }
+            }, { passive: false });
+
+            // --- TESTIMONIAL QUOTE CAROUSEL ---
+            const track = document.getElementById('testimonial-track');
+            const cards = document.querySelectorAll('.testimonial-card');
+            let currentTestimonial = 0;
+            
+            if (track && cards.length > 0) {
+                setInterval(() => {
+                    const cardHeight = window.innerWidth < 768 ? 250 : 400; 
+                    cards[currentTestimonial].classList.remove('active');
+                    currentTestimonial = (currentTestimonial + 1) % cards.length;
+                    cards[currentTestimonial].classList.add('active');
+                    track.style.transform = `translateY(-${currentTestimonial * cardHeight}px)`;
+                }, 5000); 
+            }
+
+            // --- MANUAL CLICKABLE IMAGE GALLERY ---
+            const carouselContainers = document.querySelectorAll('.carousel-container');
+            carouselContainers.forEach(wrapper => {
+                let index = 0;
+                const carousel = wrapper.querySelector('.carousel-inner');
+                const slides = wrapper.querySelectorAll('.carousel-slide');
+                
+                if (slides.length > 1) {
+                    const hint = document.createElement('div');
+                    hint.className = "absolute top-3 right-3 bg-black/50 text-white text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full pointer-events-none backdrop-blur-sm flex items-center gap-1 z-10 transition-opacity duration-300 shadow-md";
+                    hint.innerHTML = 'Tap Next <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+                    wrapper.appendChild(hint);
+
+                    wrapper.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        index = (index + 1) % slides.length;
+                        carousel.style.transform = `translateX(-${index * 100}%)`;
+                        
+                        if(hint.style.opacity !== '0') {
+                            hint.style.opacity = '0';
+                        }
+                    });
+                }
+            });
+
+            // --- GLOBAL FUNCTIONS ---
+            
+            window.scrollToSlide = (slideNumber) => {
+                container.scrollTo({
+                    left: (slideNumber - 1) * window.innerWidth, 
+                    behavior: 'smooth'
+                });
+            };
+
+            window.scrollHorizontal = (direction) => {
+                const slideWidth = window.innerWidth;
+                const currentSlide = Math.round(container.scrollLeft / slideWidth);
+                container.scrollTo({
+                    left: (currentSlide + direction) * slideWidth,
+                    behavior: 'smooth'
+                });
+            };
+            
+            window.scrollVertical = (slideId, topPosition) => {
+                 const slide = document.getElementById(slideId);
+                 if(slide) {
+                     slide.scrollTo({
+                         top: topPosition, 
+                         behavior: 'smooth'
+                     });
+                 }
+            };
+
+            window.toggleAccordion = (btn) => {
+                const content = btn.nextElementSibling;
+                const icon = btn.querySelector('.accordion-icon');
+                
+                if (content.style.gridTemplateRows === '1fr') {
+                    content.style.gridTemplateRows = '0fr';
+                    if(icon) icon.textContent = '+';
+                } else {
+                    content.style.gridTemplateRows = '1fr';
+                    if(icon) icon.textContent = '−';
+                }
+            };
+
+            // --- DUAL LEAD FORM TOGGLE ---
+            window.switchLeadForm = (formType) => {
+                const waitlistBtn = document.getElementById('btn-form-waitlist');
+                const applyBtn = document.getElementById('btn-form-apply');
+                const waitlistForm = document.getElementById('container-waitlist');
+                const applyForm = document.getElementById('container-apply');
+                const slide = document.getElementById('slide-waitlist');
+                const anchor = document.getElementById('form-scroll-anchor');
+
+                if (formType === 'waitlist') {
+                    waitlistBtn.className = "flex-1 px-8 py-4 bg-[#B09B87] text-white uppercase tracking-widest text-[10px] md:text-xs font-semibold border border-[#B09B87] transition-all duration-300 shadow-md outline-none cursor-pointer";
+                    applyBtn.className = "flex-1 px-8 py-4 bg-[#fcfbf9] text-[#2C2C2C] uppercase tracking-widest text-[10px] md:text-xs font-semibold border border-[#2C2C2C] transition-all duration-300 shadow-sm hover:bg-[#2C2C2C] hover:text-[#fcfbf9] outline-none cursor-pointer";
+
+                    applyForm.classList.add('hidden', 'opacity-0');
+                    applyForm.classList.remove('opacity-100');
+                    waitlistForm.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        waitlistForm.classList.remove('opacity-0');
+                        waitlistForm.classList.add('opacity-100');
+                        slide.scrollTo({ top: anchor.offsetTop - 20, behavior: 'smooth' });
+                    }, 50);
+                } else {
+                    applyBtn.className = "flex-1 px-8 py-4 bg-[#B09B87] text-white uppercase tracking-widest text-[10px] md:text-xs font-semibold border border-[#B09B87] transition-all duration-300 shadow-md outline-none cursor-pointer";
+                    waitlistBtn.className = "flex-1 px-8 py-4 bg-[#fcfbf9] text-[#2C2C2C] uppercase tracking-widest text-[10px] md:text-xs font-semibold border border-[#2C2C2C] transition-all duration-300 shadow-sm hover:bg-[#2C2C2C] hover:text-[#fcfbf9] outline-none cursor-pointer";
+
+                    waitlistForm.classList.add('hidden', 'opacity-0');
+                    waitlistForm.classList.remove('opacity-100');
+                    applyForm.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        applyForm.classList.remove('opacity-0');
+                        applyForm.classList.add('opacity-100');
+                        slide.scrollTo({ top: anchor.offsetTop - 20, behavior: 'smooth' });
+                    }, 50);
+                }
+            };
+
+            // --- AJAX FORM SUBMISSION & SUCCESS HANDLING ---
+            window.submitLeadForm = function(event, formElement) {
+                event.preventDefault();
+                const btn = formElement.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'SENDING...';
+                
+                const formData = new FormData(formElement);
+                
+                fetch("https://formsubmit.co/ajax/nutritionbysaoirse@gmail.com", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        document.getElementById('container-waitlist').classList.add('hidden', 'opacity-0');
+                        document.getElementById('container-apply').classList.add('hidden', 'opacity-0');
+                        
+                        const successMsg = document.getElementById('form-success-message');
+                        successMsg.classList.remove('hidden');
+                        
+                        const slide = document.getElementById('slide-waitlist');
+                        const anchor = document.getElementById('form-scroll-anchor');
+                        slide.scrollTo({ top: anchor.offsetTop - 20, behavior: 'smooth' });
+                    } else {
+                        btn.innerHTML = 'ERROR - TRY AGAIN';
+                        setTimeout(() => btn.innerHTML = originalText, 3000);
+                    }
+                })
+                .catch(error => {
+                    btn.innerHTML = 'ERROR - TRY AGAIN';
+                    setTimeout(() => btn.innerHTML = originalText, 3000);
+                });
+            };
+
+            // --- DYNAMIC METHOD ACCORDIONS ---
+            window.toggleMethodAccordion = (btn, phaseNumber) => {
+                const allBtns = document.querySelectorAll('.method-accordion-btn');
+                allBtns.forEach(b => {
+                    if (b !== btn) {
+                        const content = b.nextElementSibling;
+                        const icon = b.querySelector('.accordion-icon');
+                        content.style.gridTemplateRows = '0fr';
+                        if(icon) icon.textContent = '+';
+                    }
+                });
+                
+                window.toggleAccordion(btn);
+                
+                const icon = btn.querySelector('.accordion-icon');
+                if (icon && icon.textContent === '−') {
+                    const phaseImages = {
+                        1: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_1_28_23f.jpeg",
+                        2: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_4_26_17f-1.jpeg",
+                        3: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_3_31_10f-1.jpeg",
+                        4: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/WhatsApp-Image-2025-11-17-at-13.06.52qwe4567uiolk.jpeg"
+                    };
+                    const desktopImg = document.getElementById('method-phase-img-desktop');
+                    const mobileImg = document.getElementById('method-phase-img-mobile');
+                    
+                    if(phaseImages[phaseNumber]) {
+                        if(desktopImg) {
+                            desktopImg.style.opacity = 0;
+                            setTimeout(() => { desktopImg.src = phaseImages[phaseNumber]; desktopImg.style.opacity = 1; }, 300);
+                        }
+                        if(mobileImg) {
+                            mobileImg.style.opacity = 0;
+                            setTimeout(() => { mobileImg.src = phaseImages[phaseNumber]; mobileImg.style.opacity = 1; }, 300);
+                        }
+                    }
+                }
+            };
+
+            // --- DYNAMIC DISCIPLINE ACCORDIONS ---
+            window.toggleDisciplineAccordion = (btn, disciplineNumber) => {
+                const allBtns = document.querySelectorAll('.discipline-accordion-btn');
+                allBtns.forEach(b => {
+                    if (b !== btn) {
+                        const content = b.nextElementSibling;
+                        const icon = b.querySelector('.accordion-icon');
+                        content.style.gridTemplateRows = '0fr';
+                        if(icon) icon.textContent = '+';
+                    }
+                });
+                
+                window.toggleAccordion(btn);
+                
+                const icon = btn.querySelector('.accordion-icon');
+                if (icon && icon.textContent === '−') {
+                    const disciplineImages = {
+                        1: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/WhatsApp-Image-2025-11-17-at-fff.jpeg",
+                        2: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-21.jpg",
+                        3: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/frame_3_34_17f.jpeg",
+                        4: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Untitled-design-22.jpg",
+                        5: "https://darkblue-koala-147964.hostingersite.com/wp-content/uploads/2026/07/Photographer-Nikonorov-41.jpg"
+                    };
+                    const desktopImg = document.getElementById('discipline-img-desktop');
+                    const mobileImg = document.getElementById('discipline-img-mobile');
+                    
+                    if(disciplineImages[disciplineNumber]) {
+                        if(desktopImg) {
+                            desktopImg.style.opacity = 0;
+                            setTimeout(() => { desktopImg.src = disciplineImages[disciplineNumber]; desktopImg.style.opacity = 1; }, 300);
+                        }
+                        if(mobileImg) {
+                            mobileImg.style.opacity = 0;
+                            setTimeout(() => { mobileImg.src = disciplineImages[disciplineNumber]; mobileImg.style.opacity = 1; }, 300);
+                        }
+                    }
+                }
+            };
+
+            // --- CUSTOM VIDEO PLAYER ---
+            const video = document.getElementById('aboutVideo');
+            const videoWrapper = document.getElementById('videoWrapper');
+            const videoControls = document.getElementById('videoControls');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            const muteBtn = document.getElementById('muteBtn');
+            const mutedIcon = document.getElementById('mutedIcon');
+            const unmutedIcon = document.getElementById('unmutedIcon');
+            let hideControlsTimeout;
+            let playPromise; 
+
+            if (video && videoWrapper && videoControls) {
+                const resetControlsTimeout = () => {
+                    videoControls.style.opacity = '1';
+                    clearTimeout(hideControlsTimeout);
+                    if (!video.paused) {
+                        hideControlsTimeout = setTimeout(() => {
+                            videoControls.style.opacity = '0';
+                        }, 2500);
+                    }
+                };
+
+                videoWrapper.addEventListener('mousemove', resetControlsTimeout);
+                videoWrapper.addEventListener('touchstart', resetControlsTimeout);
+                videoWrapper.addEventListener('click', resetControlsTimeout);
+                video.addEventListener('play', resetControlsTimeout);
+                
+                video.addEventListener('pause', () => {
+                    videoControls.style.opacity = '1';
+                    clearTimeout(hideControlsTimeout);
+                });
+
+                playPauseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (video.paused) {
+                        playPromise = video.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(_ => {
+                                playIcon.classList.add('hidden');
+                                pauseIcon.classList.remove('hidden');
+                            }).catch(error => {});
+                        }
+                    } else {
+                        video.pause();
+                        playIcon.classList.remove('hidden');
+                        pauseIcon.classList.add('hidden');
+                    }
+                });
+
+                muteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (video.muted) {
+                        video.muted = false;
+                        mutedIcon.classList.add('hidden');
+                        unmutedIcon.classList.remove('hidden');
+                    } else {
+                        video.muted = true;
+                        mutedIcon.classList.remove('hidden');
+                        unmutedIcon.classList.add('hidden');
+                    }
+                });
+
+                const videoObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            playPromise = video.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(_ => {
+                                    playIcon.classList.add('hidden');
+                                    pauseIcon.classList.remove('hidden');
+                                    resetControlsTimeout();
+                                }).catch(error => {});
+                            }
+                        } else {
+                            if (playPromise !== undefined) {
+                                playPromise.then(_ => {
+                                    video.pause();
+                                    playIcon.classList.remove('hidden');
+                                    pauseIcon.classList.add('hidden');
+                                }).catch(error => {});
+                            } else {
+                                video.pause();
+                                playIcon.classList.remove('hidden');
+                                pauseIcon.classList.add('hidden');
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                videoObserver.observe(videoWrapper);
+            }
+        });
+    </script>
+</body>
+</html>
